@@ -1,38 +1,71 @@
 {
   "name": "audio-player",
   "version": "0.1.0",
+  "main": "public/electron.js",
+  "homepage": "./",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.7.3",
+    "concurrently": "^6.0.0",
+    "electron-is-dev": "^1.2.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "music-metadata": "^7.8.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.3",
+    "react-router-dom": "^5.2.0",
+    "sha1-file": "^2.0.0",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "concurrently -k \"BROWSER=none webpack --watch\" \"npm:electron\"",
+    "electron": "electron-forge start",
+    "build": "webpack",
+    "package": "webpack && electron-forge package",
+    "make": "webpack && electron-forge make"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "awesome-typescript-loader": "^5.2.1",
+    "css-loader": "^5.1.0",
+    "electron": "^9.1.1",
+    "electron-devtools-installer": "^3.1.1",
+    "source-map-loader": "^2.0.1",
+    "style-loader": "^2.0.0",
+    "typescript": "^3.9.9",
+    "wait-on": "^5.1.0",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "audio_player"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

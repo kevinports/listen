@@ -1,0 +1,105 @@
+.player {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: auto 80px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.player > div {
+  position: relative;
+}
+
+.playerCoverContainer {
+  padding: 56px 56px 32px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 4;
+}
+.playerCover {
+  width: 100%;
+  max-width: 320px;
+}
+.playerBG {
+  position: absolute;
+  width: 120%;
+  margin-left: -10%;
+  top: 50%;
+  margin-top: -50%;
+  left: 0;
+  filter: blur(96px) saturate(200%) hue-rotate(20deg) brightness(0.80);
+  z-index: 1;
+  opacity: 10;
+}
+
+.playerControlsLeft,
+.playerControlsRight,
+.playerControlsCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+
+.playerControlsLeft,
+.playerControlsRight {
+  flex: 0 0 auto;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  padding: 0 16px;
+}
+
+.playerControlsRight {
+  left: initial;
+  right: 0;
+}
+
+.playerControlsLeft button,
+.playerControlsRight button {
+  background: none;
+  border: 0;
+  color: #fff;
+  font-size: 32px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.playerControlsRight button {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.btnInActive {
+  transition: opacity 0.2s;
+  opacity: 0.4;
+}
+
+.btnActive {
+  opacity: 1;
+}
+
+.playerControlsCenter {
+  flex-direction: column;
+  flex: 1;
+  z-index: 2;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.playerControlsLeft .btnSmall {
+  font-size: 20px;
+  margin: 0 12px;
+}
