@@ -1,5 +1,5 @@
 {
-  "name": "audio-player",
+  "name": "listen",
   "version": "0.1.0",
   "main": "public/electron.js",
   "homepage": "./",
@@ -52,7 +52,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "audio_player"
+            "name": "Listen"
           }
         },
         {

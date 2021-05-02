@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const configDirPath = path.join(os.homedir(),'.audioPlayer'); 
+const configDirPath = path.join(os.homedir(),'.listen'); 
 const dbPath = path.join(configDirPath, 'db.json');
 
 if (!fs.existsSync(configDirPath)){
