@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './player.css';
-import { PlayIcon, PauseIcon, SkipAheadIcon, SkipBackIcon, ShuffleIcon } from '../Icons';
+import Visualizer from '../Visualizer';
+import { PlayIcon, PauseIcon, SkipAheadIcon, SkipBackIcon, ShuffleIcon, CloseIcon, ChevronUpIcon, ChevronDownIcon } from '../Icons';
+import { AudioFile, formatTime, remap } from '../../utils';
+import { IconButton } from '../IconButton';
 
 interface PlayerProps {
-  track: any;
+  track: AudioFile;
   onEnd: Function;
   onSkipBack: Function;
   onSkipAhead: Function;
@@ -14,16 +17,51 @@ interface PlayerProps {
 const audioEl = new Audio();
 audioEl.crossOrigin = 'anonymous';
 
+const audioCtx = new AudioContext();
+
+const analyser = audioCtx.createAnalyser();
+analyser.smoothingTimeConstant = 0.5;
+
+const source = audioCtx.createMediaElementSource(audioEl);
+let frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+source.connect(analyser);
+source.connect(audioCtx.destination);
+
 const Player: React.FC<PlayerProps> = ({track, onEnd, onSkipBack, onSkipAhead, onToggleShuffle, shouldShuffle}) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [audioFrequency, setAudioFrequency] = useState(100);
 
+  React.useEffect(() => {
+    audioEl.addEventListener('canplay', handlePlay);
+    audioEl.addEventListener('ended', () => {
+      onEnd();
+    });
+
+    // processAudioFrequency();
+
+    const tickInterval = setInterval(() => {
+      setProgress(audioEl.currentTime);
+    }, 500);
+
+    return () => {
+      clearInterval(tickInterval);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    console.log(track)
+    if (!track) return;
+    setProgress(0);
+    audioEl.src = track?.src;
+  }, [track]);
 
   const handlePlay = () => {
-    console.log('play')
     if (isPlaying) return;
     audioEl.play();
-    // audioEl.playbackRate = 0.5;
+    audioEl.playbackRate = 1;
     // audioEl.preservesPitch = false;
     setIsPlaying(true);
   };
@@ -34,77 +72,83 @@ const Player: React.FC<PlayerProps> = ({track, onEnd, onSkipBack, onSkipAhead, o
     setIsPlaying(false);
   };
 
-  React.useEffect(() => {
-    
-    audioEl.addEventListener('canplay', handlePlay);
-    audioEl.addEventListener('ended', () => {
-      onEnd();
-    });
-
-    const tickInterval = setInterval(() => {
-      setProgress(audioEl.currentTime);
-    }, 100);
-
-    return () => {
-      clearInterval(tickInterval);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    setProgress(0);
-    audioEl.src = track?.src;
-  }, [track]);
-
-  const formatTime = (time:any) => {
-    // @ts-ignore
-    const seconds = parseInt(time % 60).toString().padStart(2, '0');
-    // @ts-ignore
-    const minutes = parseInt((time / 60) % 60).toString().padStart(1, '0');
-    return `${minutes}:${seconds}`;
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded);
   }
+
+  const processAudioFrequency = () => {
+    analyser.getByteFrequencyData(frequencyData);
+    let total = 0;
+    for (let i = 0; i < frequencyData.length; i++) {
+      total += frequencyData[i];
+    }
+    let avg = total / frequencyData.length;
+    avg = Math.floor(remap(avg, 0, 255, 2, 20));
+    setAudioFrequency(avg);
+    requestAnimationFrame(processAudioFrequency);
+  }
+
+  const hasImage = track?.encodedImageUrl ? true : false;
+  const showVisualizer = (hasImage && isExpanded);
+
+  // console.log(hasImage, playerStyle);
 
   return (
     <>
       {track &&
-        <div className='player'>
-          <div className='playerCoverContainer'>
-            <img
-              className='playerCover'
-              src={track?.encodedImageUrl}
-              alt=""
-            />
-          </div>
-          <div>
-            <img
-              className='playerBG'
-              src={track?.encodedImageUrl}
-              alt=""
-            />
-            <div className='playerControlsLeft'>
-              <button className='btnSmall' onClick={() => onSkipBack()}>
+        <div className={`player${showVisualizer ? ' player--with-visualizer' : ''}`}>
+
+          {hasImage &&
+            <img className="player__bg" src={track?.encodedImageUrl} />
+          }
+          
+          {showVisualizer &&
+            <>
+              <div className='player__cover-container'>
+                <img
+                  className='player__cover'
+                  src={track.encodedImageUrl}
+                  alt=""
+                />
+              </div> 
+              <Visualizer frequency={audioFrequency} image={track.encodedImageUrl} shouldAnimate={isPlaying} />
+            </>
+          }
+        
+          <div className='player__controls'>
+            <div className='player__controls-left'>
+              <IconButton onClick={() => onSkipBack()}>
                 <SkipBackIcon />
-              </button>
+              </IconButton>
+
               {!isPlaying
-                ? <button onClick={handlePlay}>
+                ? <IconButton size={2} onClick={handlePlay}>
                     <PlayIcon />
-                  </button>
-                : <button onClick={handlePause} >
+                  </IconButton>
+                : <IconButton size={2} onClick={handlePause} >
                     <PauseIcon />
-                  </button>
+                  </IconButton>
               }
-              <button className='btnSmall' onClick={() => onSkipAhead()}>
+
+              <IconButton onClick={() => onSkipAhead()}>
                 <SkipAheadIcon />
-              </button>
-            </div>
-            <div className='playerControlsCenter'>
-              <div>{track.common.title} - {track.common.artist}</div>
-              {formatTime(progress)}
+              </IconButton>
             </div>
 
-            <div className='playerControlsRight'>
-              <button className={shouldShuffle ? 'btnActive' : 'btnInActive'} onClick={() => onToggleShuffle()}>
+            <div className='player__controls-center'>
+              <div className='player-controls__title'>{track.title} - {track.artist}</div>
+              {`${formatTime(progress)} / ${formatTime(track.duration)}`}
+            </div>
+
+            <div className='player__controls-right'>
+              <IconButton muted={!shouldShuffle} onClick={() => onToggleShuffle()}>
                 <ShuffleIcon />
-              </button>
+              </IconButton>
+
+              <IconButton onClick={handleToggleExpand}>
+                {!isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />} 
+              </IconButton>
+              
             </div>
           </div>
         </div>

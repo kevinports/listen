@@ -1,0 +1,63 @@
+.kaleidoscope {
+  --play-state: initial;
+  --cover-img: '';
+  --rows: 0;
+  --cols: 0;
+  --audio-frequency: 80;
+
+  position: absolute;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  top: -20px;
+  left: -20px;
+  opacity: 10;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: repeat(var(--rows), 1fr);
+
+  /* filter: blur(calc(var(--audio-frequency) * 1px)) saturate(200%) hue-rotate(0deg) brightness(0.75);  */
+  /* filter: blur(12px) saturate(200%) hue-rotate(5deg) brightness(0.5); */
+  filter: blur(10px) brightness(0.5) saturate(150%);
+}
+
+.kaleidoscope__row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+.kaleidoscope__cell {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.kaleidoscope img {
+  position: absolute;
+  width: 120vw;
+  animation: kaleidoscope 150s linear infinite alternate;
+  animation-play-state: var(--play-state);
+}
+
+.kaleidoscope__row:nth-child(even) {
+  transform: rotateX(180deg);
+}
+  
+.kaleidoscope__cell:nth-child(even) {
+  transform: rotateY(180deg)
+}
+
+@keyframes kaleidoscope {
+  0% {
+    transform: translate(-25%, -25%) rotateZ(0deg);
+  }
+  100% {
+    transform: translate(25%, 25%) rotateZ(360deg);
+  }
+}

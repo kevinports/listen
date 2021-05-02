@@ -1,0 +1,20 @@
+.icon-button {
+  --size: inherit;
+
+  transition: opacity 0.2s;
+  opacity: 1;
+  background: none;
+  border: 0;
+  color: currentColor;
+  font-size: var(--size);
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.icon-button--muted {
+  opacity: 0.4;
+}

@@ -1,0 +1,14 @@
+:root {
+  --font-family: 'Degular', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+
+  --c-black: #000;
+  --c-white: #FFF;
+  --c-off-white: #F0F0F0;
+
+  --c-paper: var(--c-white);
+  --c-ink: var(--c-black);
+  --c-surface-hover: var(--c-off-white);
+
+}
