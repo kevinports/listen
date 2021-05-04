@@ -1,4 +1,4 @@
-#root {
+.main {
   display: grid;
   grid-auto-flow: row;
   grid-template-rows: 1fr auto;

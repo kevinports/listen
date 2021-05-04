@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Player from '../Player';
-import './app.css';
+import './main.css';
 import { TrackList } from '../TrackList';
 import { useStateWithGetter, useGetAudioFiles } from '../../hooks';
 import { Loader } from '../Loader';
 
 const FILES_DIR = '/Users/kevinports/Documents/mp3/';
 
-const Root = () => {
+export const Main = () => {
   const {loading, files, getFiles, setDirectory} = useGetAudioFiles();
   const [currentTrack, setCurrentTrack, getCurrentTrack] = useStateWithGetter(null);
   const [doShuffle, setDoShuffle, getDoShuffle] = useStateWithGetter(false);
@@ -58,7 +57,7 @@ const Root = () => {
   )
 
   return (
-    <>
+    <div className="main">
       <TrackList 
         files={files}
         currentTrack={currentTrack}
@@ -72,16 +71,6 @@ const Root = () => {
         onToggleShuffle={handleToggleShuffle}
         shouldShuffle={doShuffle}
       />
-    </>
+    </div>
   );
 };
-
-export default function App() {
-  return (
-    <Router>
-      <Switch>
-        <Route path="/" component={Root} />
-      </Switch>
-    </Router>
-  );
-}
